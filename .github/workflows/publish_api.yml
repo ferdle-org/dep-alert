@@ -1,0 +1,35 @@
+name: Publish API
+on:
+  push:
+    paths:
+      - "mogo-plus-tpi-api/**"
+    branches:
+      - "main"
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  build-and-push:
+    name: build and push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: arn:aws:iam::704209381676:role/ContainerOperatorRole
+          aws-region: ap-southeast-2
+          role-duration-seconds: 1200
+      - name: java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+      - name: Publish api
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain adatree --domain-owner 704209381676 --query authorizationToken --output text`
+          ./gradlew clean :mogo-plus-tpi-api:build -i -x check
+          ./gradlew :mogo-plus-tpi-api:publish
