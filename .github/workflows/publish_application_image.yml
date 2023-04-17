@@ -1,0 +1,57 @@
+name: Build and Push image
+on: [push]
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ap-southeast-2
+  ECR_ACCOUNT: 704209381676
+  ECR_REPO_NAME_SHORT: "mogo-plus-tpi"
+
+jobs:
+  build-and-push:
+    name: build and push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: arn:aws:iam::704209381676:role/ContainerOperatorRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 1200
+      - name: Login to ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: create repo
+        run: aws ecr create-repository --repository-name "${ECR_REPO_NAME_SHORT}" --region ${AWS_REGION} || true
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+      - name: Build and push image
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain adatree --domain-owner 704209381676 --query authorizationToken --output text`
+          export REPOSITORY="${ECR_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME_SHORT}"
+          if [[ ${GITHUB_REF#refs/heads/} == "main" ]]; then
+            export VERSION="${GITHUB_SHA}"
+          else
+            export VERSION="snapshot-${GITHUB_SHA}"
+          fi
+          echo "Version to build: $VERSION"
+          echo "Repository $REPOSITORY"
+          VERSION=${VERSION} docker-compose build app-build app-package
+          mkdir test-results
+          docker-compose run app-build ./gradlew clean --info check
+          docker push "${REPOSITORY}:app-build"
+          docker push "${REPOSITORY}:${VERSION}"
+          docker cp $(docker ps -alq):/workspace/app/mogo-plus-service/build/test-results/test test-results
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: 'test-results/test/TEST-*.xml'
+          detailed_summary: true
+          include_passed: true
+          fail_on_failure: true
