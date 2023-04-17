@@ -1,0 +1,44 @@
+name: Build and Push clean image
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: ap-southeast-2
+  ECR_ACCOUNT: 704209381676
+  ECR_REPO_NAME_SHORT: "mogo-plus-tpi"
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+
+jobs:
+  build-clean-image:
+    name: build clean image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Validate dependabot alerts
+        uses: Adatree/validate-dependabot-vulnerabilities-action@1.0.0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: arn:aws:iam::704209381676:role/ContainerOperatorRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 1200
+      - name: Login to ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: create repo
+        run: aws ecr create-repository --repository-name "${ECR_REPO_NAME_SHORT}" --region ${AWS_REGION} || true
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+      - name: Build and push image
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain adatree --domain-owner 704209381676 --query authorizationToken --output text`
+          docker-compose build clean
+          docker push "704209381676.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME_SHORT}:app-build"
