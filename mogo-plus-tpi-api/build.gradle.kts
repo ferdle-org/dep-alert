@@ -29,7 +29,7 @@ dependencies {
     implementation("javax.servlet:javax.servlet-api:3.0.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0")
-    implementation("org.openapitools:jackson-databind-nullable:0.2.0")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.14")
 }
 
