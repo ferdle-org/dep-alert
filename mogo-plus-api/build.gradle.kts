@@ -25,7 +25,7 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20")
-    implementation("org.openapitools:jackson-databind-nullable:0.2.0")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 }
 
 tasks.withType<KotlinCompile> {
