@@ -4,7 +4,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("org.openapi.generator") version "5.4.0"
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.20"
     kotlin("plugin.spring") version "1.8.20"
 }
 
