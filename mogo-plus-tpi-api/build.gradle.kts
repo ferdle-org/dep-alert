@@ -30,7 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0")
     implementation("org.openapitools:jackson-databind-nullable:0.2.0")
-    implementation("org.springframework.boot:spring-boot-starter-web:2.6.14")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.6")
 }
 
 tasks.withType<KotlinCompile> {
