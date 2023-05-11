@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `java-library`
     `maven-publish`
-    id("org.openapi.generator") version "5.4.0"
+    id("org.openapi.generator") version "6.6.0"
     kotlin("jvm") version "1.8.0"
     kotlin("plugin.spring") version "1.8.20"
 }
