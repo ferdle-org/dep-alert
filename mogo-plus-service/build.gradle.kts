@@ -42,7 +42,7 @@ dependencies {
 
     implementation("com.auth0:java-jwt:4.3.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.16.0")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
     implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging:2.4.4")
     implementation("net.logstash.logback:logstash-logback-encoder:7.1.1")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
