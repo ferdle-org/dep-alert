@@ -34,7 +34,7 @@ dependencies {
     implementation(project(":mogo-plus-api"))
     implementation(project(":mogo-plus-tpi-api"))
     implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:2.4.4"))
-    implementation(platform("software.amazon.awssdk:bom:2.20.14"))
+    implementation(platform("software.amazon.awssdk:bom:2.20.102"))
     implementation("au.com.adatree:adatree-auth:1.15.3") {
         exclude("org.apache.logging.log4j", "log4j-api")
         exclude("org.apache.logging.log4j", "log4j-to-slf4j")
